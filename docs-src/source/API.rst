@@ -1,5 +1,6 @@
-MyPackage 1
-============
 
-MyModule 1
+
+nicer tools
 ####################
+.. automodule:: nicer.nicer
+    :members:
