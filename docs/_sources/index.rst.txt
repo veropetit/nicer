@@ -9,6 +9,7 @@ Documentation for Vero's tools for NICER data
 
 .. toctree::
    nicerl2
+   xselect
    :maxdepth: 1
    :caption: Contents:
 
