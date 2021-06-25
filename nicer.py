@@ -73,3 +73,27 @@ def xselect_command_create(folder, filename='ObsID.dat', template_f='template.da
     run.close()
 
 
+def plot_pha(filename, ax=None, **kargs):
+    '''
+    Add a Xselect PHA spectrum from a file to a graph, using the plt.step function
+    
+    :param filename: name of the xselect pha file
+    :param ax: (None) the ax to which the spectrum should be added
+    :param kargs: any additional parameters to pass to the step function.
+    
+    '''
+    
+
+    hdul = fits.open(filename)
+    data = hdul[1].data
+    hdul.close()
+    if ax is None:
+        # If no ax is passed, use the last ax used or create one
+        ax = plt.gca()
+
+    ax.step(data['CHANNEL']/100, data['COUNTS']/head['EXPOSURE'], **kargs )
+    
+    return(ax)
+
+
+    
