@@ -186,6 +186,50 @@
 <div class="section" id="module-nicer.nicer">
 <span id="nicer-tools"></span><h1>nicer tools<a class="headerlink" href="#module-nicer.nicer" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt id="nicer.nicer.gti_info">
+<code class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></code><code class="sig-name descname"><span class="pre">gti_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.gti_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the duration of each GTI and the gap in between each GTI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gti</strong> – a GTI object read from the GTI fits extension.</p></li>
+<li><p><strong>verbose</strong> – (False) flag to print out the GTI information</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rtype duration</dt>
+<dd class="field-even"><p>array with the duration of each GTI (in sec)</p>
+</dd>
+<dt class="field-odd">Rtype gap</dt>
+<dd class="field-odd"><p>array with the gap (in sec) between each GTI</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="nicer.nicer.load_curve">
+<code class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></code><code class="sig-name descname"><span class="pre">load_curve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.load_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a light curve from Xselect.</p>
+<p>The light curve starts from the first GTI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The name of the file containing the Xselect LC.</p></li>
+<li><p><strong>T0</strong> – <ol class="arabic simple" start="0">
+<li><p>Difference between the start of the GTI in the Xselect LC, and that of the desired “zero” time stamp.</p></li>
+</ol>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rtype time_LC</dt>
+<dd class="field-even"><p>= Xselect Time stamp + start of Xselect first GTI - T0.</p>
+</dd>
+<dt class="field-odd">Rtype LC</dt>
+<dd class="field-odd"><p>The light curve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="nicer.nicer.nicerl2_command_create">
 <code class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></code><code class="sig-name descname"><span class="pre">nicerl2_command_create</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ObsID.dat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nicerl2_command.sh'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.nicerl2_command_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a bash script that contains command to run Nicerl2 for each ObsID in the list (read from filename=’ObsID.dat’.</p>
@@ -201,6 +245,51 @@
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>None. Creates a bash script called output=’nicerl2_command.sh’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="nicer.nicer.plot_mk2">
+<code class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></code><code class="sig-name descname"><span class="pre">plot_mk2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ObsID.dat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obspath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LC_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LC_clean_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PDF_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_gap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.plot_mk2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a graph of the enviromental condition plus Xselect light curves.</p>
+<p>Needed:</p>
+<ul class="simple">
+<li><p>The ufa files: obspath/obsIDfolder/xti/event_cl/niObsID_0mpu7_ufa.evt – they are the base for the global GTI information. The start of the first GTI defined t=0 (T0 in the code)</p></li>
+<li><p>Some cleaned evt list: obspath/obsIDfolder/xti/event_cl/niObsID_0mpu7_cl(_type).evt. This will be use to mark the good GTIs.</p></li>
+<li><p>The mask 3 files: obspath/obsIDfolder/auxil/ni’+obs+’.mkf3</p></li>
+<li><p>A set of LC made from the UFA (LC-ufa-full/, LC-ufa-highcut/, LC-ufa-midcut/). Named ObsID.lc</p></li>
+<li><p>A set of LC made from the clean evt list (LC-LC_CLEAN_TYPE-full/, LC-LC_CLEAN_TYPE-highcut/, LC-LC_CLEAN_TYPE-midcut/). Named ObsID.lc</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – (‘ObsID.dat’) File containing the list of ObsID</p></li>
+<li><p><strong>obspath</strong> – (‘.’) Path where the ObsID folders are located.</p></li>
+<li><p><strong>clean_type</strong> – (‘’) the suffix to use for the clean event files (niObsID_0mpu7_cl(CLEAN_TYPE).evt</p></li>
+<li><p><strong>merge_gap</strong> – <ol class="arabic simple" start="300">
+<li><p>If two raw GTIs are separated by less than merge_gap (in sec), they will be printed on the same page.</p></li>
+</ol>
+</p></li>
+<li><p><strong>LC_path</strong> – (‘.’) the path where the LC folders are located.</p></li>
+<li><p><strong>LC_clean_type</strong> – (‘’) the suffix to use for the folder containing the cleaned LC (e.g. LC-LC_CLEAN_TYPE-full/)</p></li>
+<li><p><strong>PDF_path</strong> – (‘.’) the path where the PDFs will be saved (e.g. pdf_path/ObsID.pdf)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="nicer.nicer.plot_pha">
+<code class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></code><code class="sig-name descname"><span class="pre">plot_pha</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.plot_pha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a Xselect PHA spectrum from a file to a graph, using the plt.step function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – name of the xselect pha file</p></li>
+<li><p><strong>ax</strong> – (None) the ax to which the spectrum should be added</p></li>
+<li><p><strong>kargs</strong> – any additional parameters to pass to the step function.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
