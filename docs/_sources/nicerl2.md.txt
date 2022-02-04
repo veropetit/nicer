@@ -45,3 +45,5 @@ Then to process the data:
 
     > source nicerl2_source.sh
     > bash nicerl2_command.sh
+
+The end
