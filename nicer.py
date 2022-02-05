@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from astropy.io import fits
 
 def nicerl2_command_create(filename='ObsID.dat', output='nicerl2_command.sh'):
     """
