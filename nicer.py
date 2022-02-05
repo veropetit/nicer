@@ -87,6 +87,7 @@ def plot_pha(filename, ax=None, **kargs):
     
 
     hdul = fits.open(filename)
+    head = hdul[1].header
     data = hdul[1].data
     hdul.close()
     if ax is None:
