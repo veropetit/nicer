@@ -12,6 +12,11 @@ Documentation for Vero's tools for NICER data
    xselect
    :maxdepth: 1
    :caption: Contents:
+   
+.. toctree::
+   Tutorials/FunctionDemo
+   :maxdepth: 2
+   :caption: Tutorials:
 
 
 .. toctree::
