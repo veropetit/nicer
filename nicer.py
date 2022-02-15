@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
 
+###########################
+###########################
+# Section on running NICER tools in a batch
+
 def nicerl2_command_create(filename='ObsID.dat', output='nicerl2_command.sh'):
     """
     Creates a bash script that contains command to run Nicerl2 for each ObsID in the list (read from filename='ObsID.dat'.
@@ -29,8 +33,6 @@ def nicerl2_command_create(filename='ObsID.dat', output='nicerl2_command.sh'):
 
             
     f.close()
-
-
 
 def xselect_command_create(folder, filename='ObsID.dat', template_f='template.dat', run_f='run.sh'):
     '''
@@ -74,32 +76,9 @@ def xselect_command_create(folder, filename='ObsID.dat', template_f='template.da
         
     run.close()
 
-
-def plot_pha(filename, ax=None, **kargs):
-    '''
-    Add a Xselect PHA spectrum from a file to a graph, using the plt.step function
-    
-    :param filename: name of the xselect pha file
-    :param ax: (None) the ax to which the spectrum should be added
-    :param kargs: any additional parameters to pass to the step function.
-    
-    '''
-    
-
-    hdul = fits.open(filename)
-    head = hdul[1].header
-    data = hdul[1].data
-    hdul.close()
-    if ax is None:
-        # If no ax is passed, use the last ax used or create one
-        ax = plt.gca()
-
-    ax.step(data['CHANNEL']/100, data['COUNTS']/head['EXPOSURE'], **kargs )
-    
-    return(ax)
-
-
-
+###########################
+###########################
+# General data information
 
 def gti_info(gti, verbose=False):
     """
@@ -124,6 +103,39 @@ def gti_info(gti, verbose=False):
 
     return(duration, gap)
 
+
+###########################
+###########################
+# Spectra
+
+def add_pha(filename, ax=None, **kargs):
+    '''
+    Add a Xselect PHA spectrum from a file to a graph, using the plt.step function
+    
+    :param filename: name of the xselect pha file
+    :param ax: (None) the ax to which the spectrum should be added
+    :param kargs: any additional parameters to pass to the step function.
+    
+    '''
+    
+    hdul = fits.open(filename)
+    head = hdul[1].header
+    data = hdul[1].data
+    hdul.close()
+    if ax is None:
+        # If no ax is passed, use the last ax used or create one
+        ax = plt.gca()
+
+    ax.step(data['CHANNEL']/100, data['COUNTS']/head['EXPOSURE'], **kargs )
+    
+    return(ax)
+
+
+###########################
+###########################
+# Light curves
+
+
 def load_curve(filename, T0=0):
     """
     Load a light curve from Xselect.
@@ -146,6 +158,16 @@ def load_curve(filename, T0=0):
     time_LC = LC['TIME']-T0+gti_LC[0][0]
     
     return(time_LC, LC)
+
+
+
+
+
+
+###########################
+###########################
+# Background diagnostics
+
 
 def plot_mk2(filename='ObsID.dat', obspath='.', clean_type='', LC_path='.',LC_clean_type='', PDF_path='.', merge_gap=300):
     """
