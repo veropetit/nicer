@@ -397,3 +397,38 @@ def plot_mk2(filename='ObsID.dat', obspath='.', clean_type='', LC_path='.',LC_cl
                 
         return
 
+##################
+##################
+## The following function is useful if one wants to use the nimaketime command to create a gti
+## It constructs a string of expression, written to a file outfile, that can be provided to the nimaketime expr input
+## The string is written in a file outfile, and also returned directly
+## The infile is expected to have a list of tiem intervals, an example is given below:
+'''
+#********* Content of an example infile to be supplied to nimaketime_expr
+
+2.25215685e+08 2.25216562e+08
+2.25221269e+08 2.25222122e+08
+'''
+##################
+
+def nimaketime_expr(infile,outfile):
+    data=np.loadtxt(infile)
+ 
+    if len(np.shape(data[0]))>0:
+        t_start,t_end=data[:,0],data[:,1]
+    else:
+        t_start,t_end   =np.array([data[0]]),np.array([data[1]])
+
+    f=open(outfile,'w')
+    n   =len(t_start)
+    x=''
+    for i in range(n):
+        if i==0:
+            f.write('(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
+            x+='(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
+        else:
+            f.write(' || (time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
+            x+=' || (time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
+            
+    f.close()
+    return x
