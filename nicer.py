@@ -187,7 +187,7 @@ def add_lc(filename, T_ref=0, ax=None, **kargs):
         # If no ax is passed, use the last ax used or create one
         ax = plt.gca()
 
-    ax.plot(time_LC, x, **kargs )      
+    ax.errorbar(time_LC, x, yerr=LC['ERROR'], **kargs )      
     return(ax)
 
 
