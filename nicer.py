@@ -125,10 +125,17 @@ def add_pha(filename, ax=None, **kargs):
     if ax is None:
         # If no ax is passed, use the last ax used or create one
         ax = plt.gca()
+    spec_type=head['TTYPE2']
 
-    ax.step(data['CHANNEL']/100, data['COUNTS']/head['EXPOSURE'], **kargs )
+    if spec_type=='COUNTS':
+        x   =data[spec_type]/head['EXPOSURE']
+    if spec_type=='RATE':
+        x   =data[spec_type]
     
+    ax.step(data['CHANNEL']/100, x, **kargs )
     return(ax)
+
+
 
 
 ###########################
@@ -158,6 +165,30 @@ def load_curve(filename, T0=0):
     time_LC = LC['TIME']-T0+gti_LC[0][0]
     
     return(time_LC, LC)
+
+def add_lc(filename, T_ref=0, ax=None, **kargs):
+    # T_ref is a reference 'NICER' time which we want as the zero of the time-axis
+    # Open the light curve
+    hdul = fits.open(filename)
+    LC = hdul[1].data
+    LC_head=hdul[1].header
+    hdul.close()
+ 
+    lc_type=LC_head['TTYPE2']
+    if lc_type=='COUNTS':
+        x   =LC[lc_type]/LC_head['EXPOSURE']
+    if lc_type=='RATE':
+        x   =LC[lc_type]
+    
+    T0=LC_head['TIMEZERO']
+    time_LC =LC['TIME']+T0-T_ref
+    
+    if ax is None:
+        # If no ax is passed, use the last ax used or create one
+        ax = plt.gca()
+
+    ax.plot(time_LC, x, **kargs )      
+    return(ax)
 
 
 
