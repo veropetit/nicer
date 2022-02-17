@@ -411,7 +411,9 @@ def plot_mk2(filename='ObsID.dat', obspath='.', clean_type='', LC_path='.',LC_cl
 '''
 ##################
 
-def nimaketime_expr(infile,outfile):
+def nimaketime_expr(infile,outfile,include=True):
+    # include determines whether the time intervals given in infile are to be included or excluded in the gtifile
+   
     data=np.loadtxt(infile)
  
     if len(np.shape(data[0]))>0:
@@ -424,11 +426,19 @@ def nimaketime_expr(infile,outfile):
     x=''
     for i in range(n):
         if i==0:
-            f.write('(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
-            x+='(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
+            if include==True:
+                f.write('(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
+                x+='(time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
+            else:
+                f.write('!((time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
+                x+='!((time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
         else:
             f.write(' || (time>='+str(t_start[i])+' && time<='+str(t_end[i])+')')
             x+=' || (time>='+str(t_start[i])+' && time<='+str(t_end[i])+')'
+
+    if include==False:
+        f.write(')')
+        x+=')'
             
     f.close()
     return x
