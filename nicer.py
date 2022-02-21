@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
+import os
 
 ###########################
 ###########################
@@ -403,15 +404,10 @@ def plot_mk2(filename='ObsID.dat', obspath='.', clean_type='', LC_path='.',LC_cl
 ## It constructs a string of expression, written to a file outfile, that can be provided to the nimaketime expr input
 ## The string is written in a file outfile, and also returned directly
 ## The infile is expected to have a list of tiem intervals, an example is given below:
-'''
-#********* Content of an example infile to be supplied to nimaketime_expr
 
-2.25215685e+08 2.25216562e+08
-2.25221269e+08 2.25222122e+08
-'''
 ##################
 
-def nimaketime_expr(infile,outfile,include=True):
+def nimaketime_expr(infile,outfile,include=False):
     # include determines whether the time intervals given in infile are to be included or excluded in the gtifile
    
     data=np.loadtxt(infile)
@@ -442,3 +438,39 @@ def nimaketime_expr(infile,outfile,include=True):
             
     f.close()
     return x
+
+
+def nimaketime_command_create(folder,filename='ObsID.dat', include=False, run_f='run.sh'):
+    '''
+    This function creates the command for the nimaketime task
+    The commands are written in run.sh inside the folder (see below) directory
+    After running 
+        bash run.sh
+    from the terminal, the gti file with name niObsID.gti will be created inside each of the ObsID directory
+    In addition, this function also writes down the expression used in nimaketime inside the ObsID directory under the name of ObsID_nimaketime_expr.txt
+   
+    :param folder: folder is the directory containing directories with names given in filename
+                    Inside folder/ObsID/, there should be text file with name obsid_time.txt, 
+                    the obsid_time.txt is expected to have a list of time intervals which are to be included (include=True) or excluded (include=False) while running nicerl2
+                    an example of the content of the infile is given below:
+                        2.25215685e+08 2.25216562e+08
+                        2.25221269e+08 2.25222122e+08
+    :param filename: ('ObsID.dat') name of the file containing the list of ObsID
+    :param include: whether to include the gtis, or exclude them
+    :param run_f: ('run.sh') name of the file containing all of the run commands (created in `folder`)
+    '''
+    os.chdir(folder)
+    obsid = np.loadtxt(filename, dtype=str)
+    run = open(run_f, 'w')
+
+    for obs in obsid:
+        infile  =obs+'/'+obs+'_time.txt'
+        outfile =obs+'/'+obs+'_nimaketime_expr.txt'
+
+        expr    =nimaketime_expr(infile,outfile,include)
+        run.write('nimaketime infile=\'{}/{}/auxil/ni{}.mkf\' outfile=\'{}/{}/ni{}.gti\' expr=\'{}\' clobber=YES\n'.format(folder,obs,obs,folder,obs,obs,expr))
+        
+                
+    run.close()
+
+
