@@ -170,6 +170,17 @@ def load_curve(filename, T0=0):
 def add_lc(filename, T_ref=0, ax=None, **kargs):
     # T_ref is a reference 'NICER' time which we want as the zero of the time-axis
     # Open the light curve
+
+    '''
+    Add a Xselect lightcurve from a file to a graph using the plt.errorbar
+    
+    :param filename: name of the xselect .lc file
+    :param T_ref: (0) a reference 'NICER' time which we want as the zero of the time-axis
+    :param ax: (None) the ax to which the lightcurve should be added
+    :param kargs: any additional parameters to pass to the plt.errorbar function.
+    
+    '''
+
     hdul = fits.open(filename)
     LC = hdul[1].data
     LC_head=hdul[1].header
