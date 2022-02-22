@@ -443,13 +443,13 @@ def nimaketime_expr(infile,outfile,include=False):
 def nimaketime_command_create(folder,filename='ObsID.dat', include=False, run_f='run.sh'):
 
     '''
-    This function creates the command for the nimaketime task
-    The commands are written in run.sh inside the folder (see below) directory
-    After running bash run.sh from the terminal, the gti file with name niObsID.gti will be created inside each of the ObsID directory
+    This function creates the command for the nimaketime task.
+    The commands are written in run.sh inside the folder (see below) directory.
+    After running bash run.sh from the terminal, the gti file with name niObsID.gti will be created inside each of the ObsID directory.
     Inside folder/ObsID/, there should be text file with name obsid_time.txt, 
-    the obsid_time.txt is expected to have a list of time intervals which are to be included (include=True) or excluded (include=False) while running nicerl2 
+    the obsid_time.txt is expected to have a list of time intervals which are to be included (include=True) or excluded (include=False) while running nicerl2.
 
-    In addition, this function also writes down the expression used in nimaketime inside the ObsID directory under the name of ObsID_nimaketime_expr.txt
+    In addition, this function also writes down the expression used in nimaketime inside the ObsID directory under the name of ObsID_nimaketime_expr.txt.
    
     :param folder: folder is the directory containing directories with names given in filename. 
     :param filename: ('ObsID.dat') name of the file containing the list of ObsID
