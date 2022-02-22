@@ -184,12 +184,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="nicer.nicer.nimaketime_command_create">
 <span class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></span><span class="sig-name descname"><span class="pre">nimaketime_command_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ObsID.dat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'run.sh'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.nimaketime_command_create" title="Permalink to this definition"></a></dt>
-<dd><p>This function creates the command for the nimaketime task
-The commands are written in run.sh inside the folder (see below) directory
-After running bash run.sh from the terminal, the gti file with name niObsID.gti will be created inside each of the ObsID directory
+<dd><p>This function creates the command for the nimaketime task.
+The commands are written in run.sh inside the folder (see below) directory.
+After running bash run.sh from the terminal, the gti file with name niObsID.gti will be created inside each of the ObsID directory.
 Inside folder/ObsID/, there should be text file with name obsid_time.txt, 
-the obsid_time.txt is expected to have a list of time intervals which are to be included (include=True) or excluded (include=False) while running nicerl2</p>
-<p>In addition, this function also writes down the expression used in nimaketime inside the ObsID directory under the name of ObsID_nimaketime_expr.txt</p>
+the obsid_time.txt is expected to have a list of time intervals which are to be included (include=True) or excluded (include=False) while running nicerl2.</p>
+<p>In addition, this function also writes down the expression used in nimaketime inside the ObsID directory under the name of ObsID_nimaketime_expr.txt.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
