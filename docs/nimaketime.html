@@ -103,7 +103,7 @@
 </style>
 <section id="running-nimaketime-in-a-batch">
 <h1>Running nimaketime in a batch<a class="headerlink" href="#running-nimaketime-in-a-batch" title="Permalink to this headline"></a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">nimaketime_command_create</span></code> function creates a run.sh containing the command for running the <code class="docutils literal notranslate"><span class="pre">nimaketime</span></code> task. To learn about this task, visit https://heasarc.gsfc.nasa.gov/lheasoft/ftools/headas/nimaketime.html and https://heasarc.gsfc.nasa.gov/lheasoft/ftools/headas/maketime.html. The need to run this task may arise when one wants to exclude/include a set of Good Time Intervals (GTIs) while processing the nicer data. The file created by this task can be supplied to nicerl2 using the input gtifiles. Note that, the gtifiles input will always correspond to the GTIs that one wants to include. However,<code class="docutils literal notranslate"><span class="pre">nimaketime_command_create</span></code> creates the output gti file in accordance with the user’s choice to include/exclude a set of specified time intervals, which can then be supplied to nicerl2.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">nimaketime_command_create</span></code> function creates a run.sh containing the command for running the <code class="docutils literal notranslate"><span class="pre">nimaketime</span></code> task. To learn about this task, visit https://heasarc.gsfc.nasa.gov/lheasoft/ftools/headas/nimaketime.html and https://heasarc.gsfc.nasa.gov/lheasoft/ftools/headas/maketime.html. The need to run this task may arise when one wants to exclude/include a set of Good Time Intervals (GTIs) while processing the nicer data. The file created by this task can be supplied to nicerl2 using the input <code class="docutils literal notranslate"><span class="pre">gtifiles</span></code>. Note that, the gtifiles input will always correspond to the GTIs that one wants to include. However,<code class="docutils literal notranslate"><span class="pre">nimaketime_command_create</span></code> creates the output gti file in accordance with the user’s choice to include/exclude a set of specified time intervals, which can then be supplied to nicerl2.</p>
 <p>First, create a file that has all of the names of the ObsID for which you want to run nimaketime, for example:</p>
 <p>ObsID.dat:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>3627010101
@@ -111,8 +111,10 @@
 </pre></div>
 </div>
 <p>This can be the same file as for <code class="docutils literal notranslate"><span class="pre">nicerl2_command_create</span></code>, or <code class="docutils literal notranslate"><span class="pre">xselect_command_create</span></code>. Let us call the directory that contains the directories with names given by the Observation IDs as folder. Inside each folder/obsID directory (where obsID=observation IDs), create a file named as <code class="docutils literal notranslate"><span class="pre">obsID_time.txt</span></code>. This is the file that contains the time intervals that the user wants to include/exclude while processing the data. An example of the content of such a file is given below:</p>
-<p>2.25215685e+08 2.25216562e+08
-2.25221269e+08 2.25222122e+08</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2.25215685e+08 2.25216562e+08
+2.25221269e+08 2.25222122e+08
+</pre></div>
+</div>
 <p>These times are in the same format as that for the GTIs in the event file. For simplicity, let us assume that the file ObsID.dat is inside the folder directory (though this is not necessary). Also, suppose you want to remove the above time intervals.</p>
 <p>Then in python:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; import nicer.nicer as ni
@@ -123,7 +125,7 @@
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt; bash run.sh
 </pre></div>
 </div>
-<p>In case you want to make a gtifile than includes the time intervals instead of excluding it, set include=True when you call the `nimaketime_command_create’ function.</p>
+<p>In case you want to make a gtifile than includes the time intervals instead of excluding it, set include=True when you call the <code class="docutils literal notranslate"><span class="pre">nimaketime_command_create</span></code> function.</p>
 </section>
 
 
