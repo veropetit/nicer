@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
+from matplotlib.backends.backend_pdf import PdfPages
 import os
 
 ###########################
@@ -408,6 +409,291 @@ def plot_mk2(filename='ObsID.dat', obspath='.', clean_type='', LC_path='.',LC_cl
                 plt.close()
                 
         return
+
+#####################
+
+def plot_mkf(filename='ObsID.dat', obspath='.',mkf_ext='.mkf', clean_type='', LC_ufa_path='.',LC_clean_path='.', PDF_path='.', merge_gap=300):
+    """
+    Make a graph of the enviromental condition plus Xselect light curves.
+    
+    Needed:
+    
+    * The ufa files: obspath/obsIDfolder/xti/event_cl/niObsID_0mpu7_ufa.evt -- they are the base for the global GTI information. The start of the first GTI defined t=0 (T0 in the code)
+    * Some cleaned evt list: obspath/obsIDfolder/xti/event_cl/niObsID_0mpu7_cl(_type).evt. This will be use to mark the good GTIs.
+    * The mask 3 files: obspath/obsIDfolder/auxil/ni'+obs+'.mkf3
+    * A set of LC made from the UFA (LC-ufa-full/, LC-ufa-highcut/, LC-ufa-midcut/). Named ObsID.lc
+    * A set of LC made from the clean evt list (LC-LC_CLEAN_TYPE-full/, LC-LC_CLEAN_TYPE-highcut/, LC-LC_CLEAN_TYPE-midcut/). Named ObsID.lc
+    
+    :param filename: ('ObsID.dat') File containing the list of ObsID
+    :param obspath: ('.') Path where the ObsID folders are located.
+    :param mkf_ext: The extension of the filter file, it can also be an array of size equal to the number of Observation IDs in the ObsID.dat file.
+    :param clean_type: ('') the suffix to use for the clean event files (niObsID_0mpu7_cl(CLEAN_TYPE).evt
+    :param LC_ufa_path: ('.') the path where the file containing the ufa LC filenames and labels, is located. It can be None (no lc will be plotted), a single string, or a list/array.
+    :param LC_clean_path: ('.') the path where the file containing the clean LC filenames and labels, is located. It can be None (no lc will be plotted), a single string, or a list/array.
+    :param LC_clean_type: ('') the suffix to use for the folder containing the cleaned LC (e.g. LC-LC_CLEAN_TYPE-full/)
+    :param PDF_path: ('.') the path where the PDFs will be saved (e.g. pdf_path/ObsID.pdf)
+    :param merge_gap: (300) If two raw GTIs are separated by less than merge_gap (in sec), they will be printed on the same page.
+    
+    """
+
+    obsid = np.loadtxt(filename, dtype=str)
+    if len(np.shape(obsid))==0: #if there is just one observation ID
+        obsid   =np.array([obsid])
+    
+    mkf_ext_check=0 #a variable that tells whether the mkf_ext is a string or is a list/array
+    if isinstance(mkf_ext, str)==True:
+        mkf_ext_check   =1
+
+    LC_ufa_path_check=1 #a variable that tells whether the LC_ufa_path is a string or is a list/array    
+    if isinstance(LC_ufa_path, np.ndarray)==True or isinstance(LC_ufa_path, list)==True:
+        LC_ufa_path_check=0
+
+    LC_clean_path_check=1 #a variable that tells whether the LC_clean_path is a string or is a list/array
+    if isinstance(LC_clean_path, np.ndarray)==True or isinstance(LC_clean_path, list)==True:
+        LC_clean_path_check=0    
+
+    clean_type_check=0
+    if isinstance(clean_type, str)==True:
+        mkf_ext_check   =1
+
+    pdf_path_check=0
+    if isinstance(PDF_path, str)==True:
+        pdf_path_check   =1
+
+    
+    for N in range(len(obsid)): 
+        obs=obsid[N]
+            
+        # Open the ufa event file to get the original GTI information
+        os.chdir(obspath)
+        filename = obs+'/xti/event_cl/ni'+obs+'_0mpu7_ufa.evt'
+        hdul = fits.open(filename)
+        gti_ufa = hdul['GTI'].data
+        hdul.close()
+        
+        # get the GTI into a (x, 2) array to facilitate manipulation later on.
+        n_gti_ufa = len(gti_ufa)
+        gti_ufa = np.array([np.array(x) for x in gti_ufa])
+        # defining a T0 as the start of the first ufa GTI.
+        # The graph will use that T0 as the zero point of the time axis.
+        T0 = gti_ufa[0,0]
+        gti_ufa = gti_ufa - T0
+
+        print()
+        print('UFA GTI')
+        print()
+        
+        # get the duration of each GTI, and the gap in between.
+        gti_ufa_duration, gti_ufa_gap = gti_info(gti_ufa)
+
+        # Open a cleaned event file to get the GTI information
+        if clean_type_check==0:
+            my_clean_type=clean_type[N]
+        else:
+            my_clean_type=clean_type
+
+        filename = obs+'/xti/event_cl/ni'+obs+'_0mpu7_cl'+my_clean_type+'.evt'
+        hdul = fits.open(filename)
+        gti_clean = hdul['GTI'].data
+        hdul.close()
+
+        # get the GTI into a (x, 2) array to facilitate manipulation later on.
+        n_gti_clean = len(gti_clean)
+        gti_clean = np.array([np.array(x) for x in gti_clean])
+        gti_clean = gti_clean - T0 # The zero point is the start of the UFA ****
+
+        print()
+        print('CL GTI')
+        print()
+        
+        # get the duration of each clean GTI, and the gap in between.
+        gti_clean_duration, gti_clean_gap = gti_info(gti_clean)
+
+        # Get the mk data        
+        if mkf_ext_check==0:
+            mkf_extension   =mkf_ext[N]
+        else:
+            mkf_extension   =mkf_ext
+        
+        
+        filename = obs+'/auxil/ni'+obs+mkf_extension
+        hdul = fits.open(filename)
+        head_mk = hdul[1].header
+        data = hdul[1].data
+        hdul.close()
+        # Make t=0 the start of the first UFA GTI.
+        MKtime = data['TIME']-T0
+
+        # This piece of code merge together some GTIs that have very small gap
+        # so that we can make a better use of a page size.
+        # If the gap is rather large, then the next GTI will be printed on a new page.
+        gti_plot = np.array( (1,2) )
+        gti_plot.shape = (1,2)
+        gti_plot[0,0] = gti_ufa[0,0] # set the start of the plit gti to that of the first GTI.
+        k=0 # iteration variable for changes
+        for i in range(0,n_gti_ufa):
+            if gti_ufa_gap[i] > merge_gap: # if the gap with the last seg is more than 5 minutes
+                gti_plot[k,1] = gti_ufa[i-1,1] #Set the stop of the k GTI to that of the previous segment
+                gti_plot = np.vstack( [gti_plot, np.array( [gti_ufa[i,0], 0] ) ] ) # append a new plot_GTI
+                                # and set the start time to the current GTI.
+                k = k+1
+        gti_plot[-1,1]=gti_ufa[-1,1] # set the stop of last gti
+        n_gti_plot = k+1
+              
+        print()
+        print('plot GTI')
+        print()
+        
+        gti_plot_duration, gti_plot_gap = gti_info(gti_plot)
+
+        # Open the light curve
+        if LC_ufa_path_check==0:
+            ufa_path    =LC_ufa_path[N]
+        else:
+            ufa_path    =LC_ufa_path
+
+        if LC_clean_path_check==0:
+            clean_path    =LC_clean_path[N]
+        else:
+            clean_path    =LC_clean_path  
+        
+        num_lc_panel  =0
+        count_ufa=0
+        if ufa_path!=None: 
+            num_lc_panel+=1
+            os.chdir(ufa_path)
+            ufa_lc_filenames_labels=np.loadtxt('ni'+obs+'_ufa_lc_info.txt',dtype=str) #niobsIDlc_file_info.txt contains the filenames for the lcs to be overplotted and the corresponding labels
+
+            if len(np.shape(ufa_lc_filenames_labels[0]))==0:
+                ufa_lc_filenames,ufa_lc_labels  =np.array([ufa_lc_filenames_labels[0]]),np.array([ufa_lc_filenames_labels[1]])
+            else:
+                ufa_lc_filenames,ufa_lc_labels  =ufa_lc_filenames_labels[:,0],ufa_lc_filenames_labels[:,1]
+
+            time_ufa,LC_ufa=[],[]
+            for j in range(len(ufa_lc_filenames)):
+                filename = ufa_lc_filenames[j]
+                time, LC = load_curve(filename, T0)
+                time_ufa.append(time)
+                LC_ufa.append(LC)
+                count_ufa+=1
+                del(time)
+                del(LC)
+                del(filename)
+            
+            
+        count_clean=0
+        if clean_path!=None: 
+            num_lc_panel+=1
+            os.chdir(clean_path)
+            clean_lc_filenames_labels=np.loadtxt('ni'+obs+'_clean_lc_info.txt',dtype=str) #niobsIDlc_file_info.txt contains the filenames for the lcs to be overplotted
+
+            if len(np.shape(clean_lc_filenames_labels[0]))==0:
+                clean_lc_filenames,clean_lc_labels  =np.array([clean_lc_filenames_labels[0]]),np.array([clean_lc_filenames_labels[1]])
+            else:
+                clean_lc_filenames,clean_lc_labels  =clean_lc_filenames_labels[:,0],clean_lc_filenames_labels[:,1]
+
+            time_clean,LC_clean=[],[]
+            for j in range(len(clean_lc_filenames)):
+                filename = clean_lc_filenames[j]
+                time, LC = load_curve(filename, T0)
+                time_clean.append(time)
+                LC_clean.append(LC)
+                count_clean+=1
+                del(time)
+                del(LC)
+                del(filename)
+
+        if pdf_path_check==0:
+            my_PDF_path =PDF_path[N]
+        else:
+            my_PDF_path =PDF_path
+
+        with PdfPages('{}/ni{}_mk.pdf'.format(my_PDF_path, obs)) as pdf:
+            for i in range(0,n_gti_plot):
+            #for i in range(1,2):
+                tmin = gti_plot[i,0]
+                tmax = gti_plot[i,1]
+
+                n = np.where( np.logical_and( MKtime >= tmin, MKtime <= tmax ) )
+                fig, ax = plt.subplots(2+num_lc_panel,1, figsize=(8,10))
+                #-----------------------
+                # Overonly
+                ax[0].scatter(MKtime[n], data['FPM_OVERONLY_COUNT'][n], s=3, zorder=500)
+                ax[0].axhline(y=1.0, c='k', ls='--', label='abs cutoff')
+                ax[0].plot( MKtime[n], 1.52*data['COR_SAX'][n]**(-0.633), c='orchid', lw=2, zorder=1000, label='overonly_exp' )
+                ax[0].set_ylim(0,3)
+                ax[0].set_ylabel('overonly')
+                ax[0].set_xlabel('Time since T0 (s)')
+                ax[0].set_title('{}, segment {}'.format(obs, i))
+                ax[0].legend(loc=0)
+                #-----------------------
+                # Underonly
+                ax[1].scatter(MKtime[n], data['FPM_UNDERONLY_COUNT'][n], s=3, zorder=500)
+                ax[1].set_ylim(0,300)
+                ax[1].set_ylabel('underonly')
+                ax[1].axhline(y=200, c='k', ls='--', label='def cutoff')
+                ax[1].set_xlabel('Time since T0 (s)')
+                #ax[0].set_title('{}, segment {}'.format(obs, i))
+                ax[1].legend(loc=0)
+                #-----------------------
+                # The light curves from the ufa
+                #    full energy range
+                cmap=plt.get_cmap('rainbow')
+                if count_ufa>0:
+                    ymax=0
+                    col_arr=np.linspace(0,0.9999,count_ufa)
+                    for count in range(count_ufa):
+                        my_label=ufa_lc_labels[count].replace('_',' ')
+                        n2 = np.where( np.logical_and(  time_ufa[count] >= tmin, time_ufa[count] <= tmax ) )
+                        ax[2].errorbar(time_ufa[count][n2], LC_ufa[count]['RATE'][n2], yerr=LC_ufa[count]['ERROR'][n2], fmt='.', ms=2, color=cmap(col_arr[count]), label=my_label, zorder=500 )
+                        if max(LC_ufa[count]['RATE'][n2])>ymax:
+                            ymax=max(LC_ufa[count]['RATE'][n2])
+
+                    ax[2].plot(MKtime[n], data['SAA'][n], c='k', label='SAA (1:yes, 0:no)' )
+                    ax[2].set_ylabel('UFA Count Rate')
+                    ax[2].set_ylim(0,ymax+0.5)
+                    ax[2].axhline(y=1.0, ls='--', c='0.5')
+                    ax[2].axhline(y=2.0, ls='--', c='0.5')
+                    ax[2].legend(loc=0)
+                #-----------------------
+     
+                # The light curves from the current filtering
+                if count_clean>0:
+                    ymax=0
+                    col_arr=np.linspace(0,0.9999,count_clean)
+                    for count in range(count_clean):
+                        my_label=clean_lc_labels[count].replace('_',' ')
+                        n2 = np.where( np.logical_and(  time_clean[count] >= tmin, time_clean[count] <= tmax ) )
+                        ax[num_lc_panel+1].errorbar(time_clean[count][n2], LC_clean[count]['RATE'][n2], yerr=LC_clean[count]['ERROR'][n2], fmt='.', ms=2, color=cmap(col_arr[count]), label=my_label, zorder=500 )
+                        if max(LC_clean[count]['RATE'][n2])>ymax:
+                            ymax=max(LC_clean[count]['RATE'][n2])
+
+                    ax[num_lc_panel+1].set_ylabel('Filtered Count Rate')
+                    ax[num_lc_panel+1].set_ylim(0,ymax+0.5)
+                    ax[num_lc_panel+1].axhline(y=1.0, ls='--', c='0.5')
+                    ax[num_lc_panel+1].axhline(y=2.0, ls='--', c='0.5')
+                    ax[num_lc_panel+1].legend(loc=0)
+
+
+                #-----------------------
+                # Overplotting the clean GTIs
+                for j in range(0,n_gti_clean):
+                    ttmin = gti_clean[j,0]
+                    ttmax = gti_clean[j,1]
+                    if np.logical_and( ttmin >= tmin, ttmin <= tmax ):
+                        ax[0].axvspan(ttmin, ttmax, alpha=0.1, color='green', zorder=100)
+                        ax[1].axvspan(ttmin, ttmax, alpha=0.1, color='green', zorder=100)
+                        for num in range(num_lc_panel):
+                            ax[2+num].axvspan(ttmin, ttmax, alpha=0.1, color='green', zorder=100)
+                        
+                for item in ax:
+                    item.set_xlim(tmin, tmax)
+                plt.tight_layout()
+                pdf.savefig(fig)  # or you can pass a Figure object to pdf.savefig
+                plt.close()
+                
+    return
+
 
 ##################
 ##################

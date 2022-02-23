@@ -103,6 +103,22 @@
 <section id="module-nicer.nicer">
 <span id="nicer-tools"></span><h1>nicer tools<a class="headerlink" href="#module-nicer.nicer" title="Permalink to this headline"></a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="nicer.nicer.add_lc">
+<span class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></span><span class="sig-name descname"><span class="pre">add_lc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.add_lc" title="Permalink to this definition"></a></dt>
+<dd><p>Add a Xselect lightcurve from a file to a graph using the plt.errorbar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – name of the xselect .lc file</p></li>
+<li><p><strong>T_ref</strong> – a reference ‘NICER’ time which we want as the zero of the time-axis</p></li>
+<li><p><strong>ax</strong> – (None) the ax to which the lightcurve should be added</p></li>
+<li><p><strong>kargs</strong> – any additional parameters to pass to the plt.errorbar function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nicer.nicer.add_pha">
 <span class="sig-prename descclassname"><span class="pre">nicer.nicer.</span></span><span class="sig-name descname"><span class="pre">add_pha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nicer.nicer.add_pha" title="Permalink to this definition"></a></dt>
 <dd><p>Add a Xselect PHA spectrum from a file to a graph, using the plt.step function</p>
