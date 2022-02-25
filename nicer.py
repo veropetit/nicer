@@ -139,6 +139,29 @@ def add_pha(filename, ax=None, **kargs):
 
 
 
+def load_pha(filename):
+    '''
+    Add a Xselect PHA spectrum from a file to a graph, using the plt.step function
+    
+    :param filename: name of the xselect pha file
+    :param ax: (None) the ax to which the spectrum should be added
+    :param kargs: any additional parameters to pass to the step function.
+    
+    '''
+    
+    hdul = fits.open(filename)
+    head = hdul[1].header
+    data = hdul[1].data
+    hdul.close()
+    spec_type=head['TTYPE2']
+
+    if spec_type=='COUNTS':
+        x   =data[spec_type]/head['EXPOSURE']
+    if spec_type=='RATE':
+        x   =data[spec_type]
+    
+    return(data['CHANNEL']/100,x)
+
 
 ###########################
 ###########################
@@ -478,7 +501,7 @@ def plot_mkf(filename='ObsID.dat', obspath='.',mkf_ext='.mkf', clean_type='', LC
         # The graph will use that T0 as the zero point of the time axis.
         T0 = gti_ufa[0,0]
         gti_ufa = gti_ufa - T0
-
+        print('Obs ID and T0 are respectively: ',obs,T0)
         print()
         print('UFA GTI')
         print()
